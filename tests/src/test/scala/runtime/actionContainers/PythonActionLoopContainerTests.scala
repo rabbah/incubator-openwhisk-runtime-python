@@ -39,6 +39,20 @@ class PythonActionLoopContainerTests extends PythonActionContainerTests with Wsk
     new File(this.getClass.getClassLoader.getResource(name).toURI)
   }
 
+  override val testEnvParameters =
+    TestConfig("""
+                 |import os
+                 |
+                 |a = os.environ['SOME_VAR']
+                 |b = os.environ['ANOTHER_VAR']
+                 |
+                 |def main(args):
+                 |    return {
+                 |       "SOME_VAR": a,
+                 |       "ANOTHER_VAR": b
+                 |    }
+               """.stripMargin.trim)
+
   it should "run zipped Python action containing a virtual environment" in {
     val zippedPythonAction = testArtifact("python_virtualenv.zip")
     val code = readAsBase64(zippedPythonAction.toPath)
@@ -106,4 +120,5 @@ class PythonActionLoopContainerTests extends PythonActionContainerTests with Wsk
           e should include("Zip file does not include /virtualenv/bin/")
       })
   }
+
 }
